@@ -1,0 +1,31 @@
+{
+  "status": "LOCAL_SYNTHETIC_ONLY",
+  "runtime": "C++17 native on local PC",
+  "training": "scikit-learn IsolationForest; normal sessions only",
+  "sklearn_version": "1.9.1",
+  "numpy_version": "2.5.4",
+  "window_us": 100000,
+  "window_policy": "tumbling; final partial window omitted",
+  "features": [
+    "fps",
+    "unique_ids",
+    "id_entropy",
+    "max_id_share",
+    "byte_mean",
+    "byte_std",
+    "bit_flip_mean",
+    "same_id_iat_ms"
+  ],
+  "threshold": 0.6081362379062818,
+  "threshold_calibration": "99.5 percentile of held-out normal validation scores",
+  "train_windows": 1200,
+  "validation_windows": 600,
+  "normal_test_windows": 600,
+  "parity_windows": 1660,
+  "max_score_parity_error": 1.1102230246251565e-16,
+  "normal_test_ml_window_fpr": 0.006666666666666667,
+  "artifact_sha256": "500f3d312f046ba718dbb541fcd780f49f390e3cf925eb4148abb69448f94795",
+  "pi_benchmark": "NOT RUN",
+  "real_dataset_evaluation": "NOT RUN",
+  "note": "Synthetic smoke test; these metrics do not estimate real-vehicle detection quality."
+}

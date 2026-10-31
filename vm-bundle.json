@@ -1,0 +1,27 @@
+{
+  "purpose": "REVIEW / STAGING ONLY",
+  "runtime": "Build C++ natively inside Ubuntu VM; verifier reports actual architecture",
+  "target": "ubuntu-vm",
+  "model": "SYNTHETIC DEMO ONLY",
+  "golden_reference": "32 local C++ scores; exported scorer previously checked against sklearn on 1660 windows",
+  "sha256": {
+    "CMakeLists.txt": "18f8bbc45224b7c81086555405324a78a3de274d1017092ea72a61eefb755531",
+    "src/main.cpp": "a7c99ba88fc043add530ec4f07fcb6804dda28e23934bb382eec40c52f3c3878",
+    "models/demo.forest": "500f3d312f046ba718dbb541fcd780f49f390e3cf925eb4148abb69448f94795",
+    "models/manifest.json": "9e1bea52c05e9b5af13f39b225628e6630e841d549596bf79f2e4f7c644e325b",
+    "models/pi-golden-features.csv": "08e4cee30f2c06d3fcbff0aa1ecacba0eecb1712fb6b2567f11d72806bfd70ba",
+    "models/pi-golden-scores.txt": "2abb9a939bd9fd864bcb9fc82dc26892a5ceda06e2abae73f941acef6f7e6273",
+    "data/demo.csv": "8997f19a8dd92743032431850c69020fba91376843f2df7eff85ca4fc5f205f0",
+    "tools/verify_pi_bundle.py": "fb4e1ee0aa02ec95e1ddebbee316e93f35ea98a985dc6a134cdd76d801a8aac5",
+    "tools/serve.py": "f672587bc8745b3f9cc54216fe15d5dc647ed0fb4ff5f8eae594473aaea50d45",
+    "tests/test_pipeline.py": "92e9d8e1c3e196aa9e3648307e4f6820f6a47b79ad64cb91b53335343a52d1e5",
+    "ui/index.html": "5eabe8c6a34c339a69b1b270eec3dbcbb3aee78eadf6256566534b4a97a9d536",
+    "docs/architecture.svg": "9f6115161d64535f4db49c5e60d7cbbfc67d0cbcf2de68670e6bba134c1aa244",
+    "docs/DEPLOY_RASPBERRY_PI.vi.md": "32f094cfe1ca3cf4a1e51253d9463c86de553d62d9585d704e75933275317af2",
+    "runtime/validation.json": "9e1bea52c05e9b5af13f39b225628e6630e841d549596bf79f2e4f7c644e325b",
+    "docs/TASK_REVIEW.html": "384563fc65706c67a30f00bf81addfbac9ef701f61c48e4669d1d3496410b121",
+    "docs/TASK_BREAKDOWN.vi.md": "2752c8fce88bc1977a55ddc467e09363553971792c16cffd887b73879b05a521",
+    "docs/REVIEW_PLAN.json": "00d9a33721fb8f9a16e82a0dcf844987efba0f8ebaac334ee9e57fdce3814f85",
+    "docs/UBUNTU_VM_FIRST_RUN.vi.md": "c87bf85ea144f81e2a4101404ee3733caaf001098a5f0039db0322a53d46ef4d"
+  }
+}

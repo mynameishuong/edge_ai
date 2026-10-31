@@ -1,0 +1,2 @@
+# Optional browser smoke test; uses the installed Google Chrome.
+websocket-client==1.9.2

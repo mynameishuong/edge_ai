@@ -1,0 +1,195 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="1500" viewBox="0 0 1680 1500" role="img" aria-labelledby="title desc">
+<title id="title">AI-VIDS end-to-end architecture</title><desc id="desc">CAN lab and datasets feed a local C++ edge pipeline. An offline training pipeline exports Isolation Forest trees to the edge. Local dashboard shows evidence and metrics. Planned Raspberry Pi production stages are distinguished from the implemented local demo.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#6c97b5"/></marker><marker id="green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#54e3c2"/></marker></defs>
+<rect width="1680" height="1500" rx="18" fill="#0b1424"/>
+<style>text{font-family:'Segoe UI',Arial,sans-serif} .h{font-size:19px;font-weight:650;fill:#e7f1fc}.b{font-size:15px;fill:#afc1d8}.tag{font-size:11px;letter-spacing:1.3px;fill:#54e3c2}.label{font-size:13px;fill:#8ca6c0}g:target>rect{stroke:#ffc46b;stroke-width:3}</style>
+<text x="42" y="49" class="tag" >AI–VIDS / A–Z SYSTEM ARCHITECTURE</text>
+<text x="42" y="97" class="h" style="font-size:32px">Automotive Edge AI Intrusion Detection</text>
+<text x="42" y="129" class="b" >LOCAL REVIEW v0.1  •  Target: Raspberry Pi 4 / Linux 64-bit  •  No cloud in the inference path</text>
+<text x="42" y="175" class="tag" >A  INPUTS &amp; HARDWARE / 18% EFFORT</text>
+<text x="440" y="175" class="tag" >B  EDGE RUNTIME / 30% EFFORT</text>
+<text x="1240" y="175" class="tag" >C  EVIDENCE &amp; REVIEW / 22% EFFORT</text>
+<rect x="420" y="195" width="780" height="804" rx="16" fill="#0d1c2d" stroke="#2d4661"/>
+<g id="arch-A1" data-arch-ref="A1">
+<rect x="42" y="210" width="330" height="120" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="60" y="233" class="tag" >A1 / 4% · LOCAL · IMPLEMENTED</text>
+<text x="60" y="261" class="h" >Recorded / synthetic traffic</text>
+<text x="60" y="288" class="b" >CSV frames with source timestamps</text>
+<text x="60" y="311" class="b" >Implemented: local replay</text>
+</g>
+<g id="arch-A2" data-arch-ref="A2">
+<rect x="42" y="380" width="330" height="130" rx="11" fill="#142033" stroke="#40526b"/>
+<text x="60" y="403" class="tag" >A2 / 5% · LINUX · VALIDATION PENDING</text>
+<text x="60" y="431" class="h" >Isolated Linux lab</text>
+<text x="60" y="458" class="b" >Virtual ECUs → vcan0</text>
+<text x="60" y="481" class="b" >Same executable: capture mode</text>
+</g>
+<g id="arch-A3" data-arch-ref="A3">
+<rect x="42" y="560" width="330" height="177" rx="11" fill="#142033" stroke="#40526b"/>
+<text x="60" y="583" class="tag" >A3 / 6% · HARDWARE · PLANNED</text>
+<text x="60" y="611" class="h" >Physical CAN testbench</text>
+<text x="60" y="638" class="b" >ECU A ── CAN_H / CAN_L ── ECU B</text>
+<text x="60" y="661" class="b" >Two bus-end terminators only</text>
+<text x="60" y="684" class="b" >USB-CAN controller + transceiver</text>
+<text x="60" y="707" class="b" >Pi GPIO cannot read CAN directly</text>
+</g>
+<g id="arch-A4" data-arch-ref="A4">
+<rect x="42" y="790" width="330" height="166" rx="11" fill="#142033" stroke="#40526b"/>
+<text x="60" y="813" class="tag" >A4 / 3% · RASPBERRY PI · PLANNED</text>
+<text x="60" y="841" class="h" >CAN adapter → Pi 4</text>
+<text x="60" y="868" class="b" >USB-CAN → Linux driver → can0</text>
+<text x="60" y="891" class="b" >Monitor: controller listen-only</text>
+<text x="60" y="914" class="b" >Inference service never sends CAN</text>
+<text x="60" y="937" class="b" >Exact bitrate follows testbench</text>
+</g>
+<g id="arch-B1" data-arch-ref="B1">
+<rect x="450" y="220" width="720" height="110" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="468" y="243" class="tag" >B1 / 6% · C++ · IMPLEMENTED / SOCKETCAN NOT RUNTIME-TESTED</text>
+<text x="468" y="271" class="h" >Frame acquisition / source adapter</text>
+<text x="468" y="298" class="b" >Local CSV replay  |  Linux SocketCAN receiver</text>
+<text x="468" y="321" class="b" >Classic CAN, standard 11-bit, 0–8 bytes in prototype</text>
+</g>
+<g id="arch-B2" data-arch-ref="B2">
+<rect x="450" y="370" width="720" height="105" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="468" y="393" class="tag" >B2 / 4% · C++ · IMPLEMENTED</text>
+<text x="468" y="421" class="h" >Validate → timestamp → window</text>
+<text x="468" y="448" class="b" >Reject malformed CSV; skip RTR / EFF / error frames on Linux</text>
+<text x="468" y="471" class="b" >Monotonic receipt time live; original timestamps on replay</text>
+</g>
+<g id="arch-B3" data-arch-ref="B3">
+<rect x="450" y="515" width="720" height="110" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="468" y="538" class="tag" >B3 / 7% · C++ · SHARED BY TRAINING AND RUNTIME</text>
+<text x="468" y="566" class="h" >Feature extraction / schema v1</text>
+<text x="468" y="593" class="b" >100 ms tumbling window · 8 global features · float32</text>
+<text x="468" y="616" class="b" >Rate / ID diversity / entropy / payload stats / timing</text>
+</g>
+<g id="arch-B4" data-arch-ref="B4">
+<rect x="450" y="665" width="345" height="117" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="468" y="688" class="tag" >B4 / 5% · C++ · IMPLEMENTED</text>
+<text x="468" y="716" class="h" >Isolation Forest</text>
+<text x="468" y="743" class="b" >64 trees · normal-only training</text>
+<text x="468" y="766" class="b" >Score high = more anomalous</text>
+</g>
+<g id="arch-B5" data-arch-ref="B5">
+<rect x="825" y="665" width="345" height="117" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="843" y="688" class="tag" >B5 / 3% · C++ · IMPLEMENTED</text>
+<text x="843" y="716" class="h" >Rule baseline</text>
+<text x="843" y="743" class="b" >Unknown ID / high frame rate</text>
+<text x="843" y="766" class="b" >Demo thresholds only</text>
+</g>
+<g id="arch-B6" data-arch-ref="B6">
+<rect x="450" y="823" width="720" height="140" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="468" y="846" class="tag" >B6 / 5% · C++ · IMPLEMENTED</text>
+<text x="468" y="874" class="h" >Decision + health state machine</text>
+<text x="468" y="901" class="b" >HEALTHY → SUSPECT → ALERT; 5 normal windows to clear</text>
+<text x="468" y="924" class="b" >2 anomalous windows to confirm; hard rule alerts immediately</text>
+<text x="468" y="947" class="b" >NO_DATA for silent windows; rx drop / ignored frame counters</text>
+</g>
+<g id="arch-C1" data-arch-ref="C1">
+<rect x="1240" y="220" width="396" height="130" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="1258" y="243" class="tag" >C1 / 5% · REPLAY UI · IMPLEMENTED</text>
+<text x="1258" y="271" class="h" >Review dashboard</text>
+<text x="1258" y="298" class="b" >Loopback HTTP server: 127.0.0.1</text>
+<text x="1258" y="321" class="b" >Traffic / score / state / model P95</text>
+<text x="1258" y="344" class="b" >Replay UI; live capture UI pending</text>
+</g>
+<g id="arch-C2" data-arch-ref="C2">
+<rect x="1240" y="405" width="396" height="132" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="1258" y="428" class="tag" >C2 / 6% · WINDOW EVENTS · IMPLEMENTED</text>
+<text x="1258" y="456" class="h" >Event stream / evidence</text>
+<text x="1258" y="483" class="b" >NDJSON window events implemented</text>
+<text x="1258" y="506" class="b" >Raw evidence / retention planned</text>
+<text x="1258" y="529" class="b" >Alert lifecycle / context pending</text>
+</g>
+<g id="arch-C3" data-arch-ref="C3">
+<rect x="1240" y="590" width="396" height="156" rx="11" fill="#142033" stroke="#40526b"/>
+<text x="1258" y="613" class="tag" >C3 / 6% · PI MEASUREMENTS · PLANNED</text>
+<text x="1258" y="641" class="h" >Operational visibility</text>
+<text x="1258" y="668" class="b" >Detection delay ≠ model latency</text>
+<text x="1258" y="691" class="b" >CPU / RAM / temperature / rx drops</text>
+<text x="1258" y="714" class="b" >False alerts per hour; drift review</text>
+<text x="1258" y="737" class="b" >No online model self-learning</text>
+</g>
+<g id="arch-C4" data-arch-ref="C4">
+<rect x="1240" y="805" width="396" height="151" rx="11" fill="#142033" stroke="#40526b"/>
+<text x="1258" y="828" class="tag" >C4 / 5% · NOT DEPLOYED</text>
+<text x="1258" y="856" class="h" >Production hardening gate</text>
+<text x="1258" y="883" class="b" >Bounded queues + logger rotation</text>
+<text x="1258" y="906" class="b" >Kernel timestamp / DBC / per-ID model</text>
+<text x="1258" y="929" class="b" >Supervisor + health + model rollback</text>
+<text x="1258" y="952" class="b" >Only after user review and approval</text>
+</g>
+<polyline points="372,270 450,270" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="372,445 402,445 402,300 450,300" fill="none" stroke="#6c97b5" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+<polyline points="207,737 207,790" fill="none" stroke="#6c97b5" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+<polyline points="372,875 410,875 410,315 450,315" fill="none" stroke="#6c97b5" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+<polyline points="810,330 810,370" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="810,475 810,515" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="625,625 625,665" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="990,625 990,665" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="625,782 625,823" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="990,782 990,823" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="1170,898 1218,898 1218,470 1240,470" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<text x="1178" y="795" class="label" >events</text>
+<polyline points="1438,405 1438,350" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<text x="1450" y="382" class="label" >HTTP poll</text>
+<text x="42" y="1043" class="tag" >D  OFFLINE TRAINING &amp; RELEASE LIFECYCLE / 30% EFFORT</text>
+<g id="arch-D1" data-arch-ref="D1">
+<rect x="42" y="1075" width="296" height="165" rx="11" fill="#142033" stroke="#40526b"/>
+<text x="60" y="1098" class="tag" >D1 / 6% · REAL DATA · PENDING</text>
+<text x="60" y="1126" class="h" >Collect &amp; curate</text>
+<text x="60" y="1153" class="b" >HCRL / ROAD / own lab captures</text>
+<text x="60" y="1176" class="b" >Normalize timestamp + CAN fields</text>
+<text x="60" y="1199" class="b" >Split by capture/session first</text>
+<text x="60" y="1222" class="b" >Real datasets: not evaluated</text>
+</g>
+<g id="arch-D2" data-arch-ref="D2">
+<rect x="374" y="1075" width="296" height="165" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="392" y="1098" class="tag" >D2 / 5% · DEMO ONLY · PARTIAL</text>
+<text x="392" y="1126" class="h" >Build normal feature sets</text>
+<text x="392" y="1153" class="b" >Same C++ extractor as runtime</text>
+<text x="392" y="1176" class="b" >Train normal sessions only</text>
+<text x="392" y="1199" class="b" >Validation normal: pick threshold</text>
+<text x="392" y="1222" class="b" >Hold out entire test sessions</text>
+</g>
+<g id="arch-D3" data-arch-ref="D3">
+<rect x="706" y="1075" width="296" height="165" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="724" y="1098" class="tag" >D3 / 9% · LOCAL MODEL · QUALITY GAP</text>
+<text x="724" y="1126" class="h" >Train → export → verify</text>
+<text x="724" y="1153" class="b" >Python / scikit-learn on PC</text>
+<text x="724" y="1176" class="b" >Export tree nodes, not pickle</text>
+<text x="724" y="1199" class="b" >Compare Python vs C++ scores</text>
+<text x="724" y="1222" class="b" >Payload shift: 1/40 above threshold</text>
+</g>
+<g id="arch-D4" data-arch-ref="D4">
+<rect x="1038" y="1075" width="296" height="165" rx="11" fill="#122c37" stroke="#326c75"/>
+<text x="1056" y="1098" class="tag" >D4 / 5% · BUNDLE · PARTIAL</text>
+<text x="1056" y="1126" class="h" >Versioned artifact</text>
+<text x="1056" y="1153" class="b" >Model + feature schema + profile</text>
+<text x="1056" y="1176" class="b" >Threshold + fingerprint + report</text>
+<text x="1056" y="1199" class="b" >Candidate version for review</text>
+<text x="1056" y="1222" class="b" >No automatic promotion</text>
+</g>
+<g id="arch-D5" data-arch-ref="D5">
+<rect x="1370" y="1075" width="266" height="165" rx="11" fill="#142033" stroke="#40526b"/>
+<text x="1388" y="1098" class="tag" >D5 / 5% · FUTURE GATES</text>
+<text x="1388" y="1126" class="h" >Review → Pi → release</text>
+<text x="1388" y="1153" class="b" >Local review approval</text>
+<text x="1388" y="1176" class="b" >Linux vcan + testbench</text>
+<text x="1388" y="1199" class="b" >Pi performance validation</text>
+<text x="1388" y="1222" class="b" >Separate production approval</text>
+</g>
+<polyline points="338,1148 374,1148" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="670,1148 706,1148" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="1002,1148 1038,1148" fill="none" stroke="#6c97b5" stroke-width="2"  marker-end="url(#arrow)"/>
+<polyline points="1334,1148 1370,1148" fill="none" stroke="#6c97b5" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+<polyline points="1186,1075 1186,647 622,647 622,665" fill="none" stroke="#54e3c2" stroke-width="2"  marker-end="url(#green)"/>
+<text x="983" y="640" class="label" >load exported forest</text>
+<rect x="42" y="1265" width="1594" height="136" rx="12" fill="#251f1b" stroke="#665032"/>
+<text x="62" y="1295" class="tag" >BOUNDARIES THAT MATTER</text>
+<text x="62" y="1324" class="b" >An anomaly score does not identify an attacker or prove spoofing/replay. Signal-level checks require DBC and context.</text>
+<text x="62" y="1351" class="b" >Local prototype is synchronous. Bounded capture/logging queues, storage retention and automated rollback are future work.</text>
+<text x="62" y="1378" class="b" >100 ms aggregation + processing + debounce determines detection delay. Model P95 alone is not end-to-end latency.</text>
+<text x="42" y="1454" class="label" >Teal boxes: implemented local path     Muted boxes / dashed links: target architecture or unvalidated hardware path</text>
+<text x="42" y="1478" class="label" >Percentages = estimated effort allocation across the review plan, NOT completion, accuracy or measured timing.</text>
+</svg>

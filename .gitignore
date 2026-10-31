@@ -1,0 +1,7 @@
+.venv/
+build/
+__pycache__/
+runtime/
+data/*.csv
+models/*.forest
+*.pyc

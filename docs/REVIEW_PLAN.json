@@ -1,0 +1,757 @@
+{
+  "date": "2026-10-31",
+  "weight_meaning": "relative effort estimate, NOT completion",
+  "groups": [
+    {
+      "id": "A",
+      "name": "Nguồn dữ liệu & phần cứng",
+      "weight": 18
+    },
+    {
+      "id": "B",
+      "name": "Lõi xử lý trên Edge",
+      "weight": 30
+    },
+    {
+      "id": "C",
+      "name": "Hiển thị, bằng chứng & vận hành",
+      "weight": 22
+    },
+    {
+      "id": "D",
+      "name": "Dữ liệu train, model & phát hành",
+      "weight": 30
+    }
+  ],
+  "nodes": [
+    {
+      "id": "A1",
+      "weight": 4,
+      "title": "Recorded / synthetic traffic",
+      "name": "Dữ liệu đầu vào mô phỏng"
+    },
+    {
+      "id": "A2",
+      "weight": 5,
+      "title": "Isolated Linux lab",
+      "name": "Phòng lab vcan"
+    },
+    {
+      "id": "A3",
+      "weight": 6,
+      "title": "Physical CAN testbench",
+      "name": "CAN testbench phần cứng"
+    },
+    {
+      "id": "A4",
+      "weight": 3,
+      "title": "CAN adapter → Pi 4",
+      "name": "Môi trường chạy trên Pi"
+    },
+    {
+      "id": "B1",
+      "weight": 6,
+      "title": "Frame acquisition / source adapter",
+      "name": "Thu nhận frame"
+    },
+    {
+      "id": "B2",
+      "weight": 4,
+      "title": "Validate → timestamp → window",
+      "name": "Clock và chia cửa sổ"
+    },
+    {
+      "id": "B3",
+      "weight": 7,
+      "title": "Feature extraction / schema v1",
+      "name": "Trích đặc trưng"
+    },
+    {
+      "id": "B4",
+      "weight": 5,
+      "title": "Isolation Forest",
+      "name": "Inference C++"
+    },
+    {
+      "id": "B5",
+      "weight": 3,
+      "title": "Rule baseline",
+      "name": "Rule và profile"
+    },
+    {
+      "id": "B6",
+      "weight": 5,
+      "title": "Decision + health state machine",
+      "name": "Quyết định và health"
+    },
+    {
+      "id": "C1",
+      "weight": 5,
+      "title": "Review dashboard",
+      "name": "Dashboard replay/live"
+    },
+    {
+      "id": "C2",
+      "weight": 6,
+      "title": "Event stream / evidence",
+      "name": "Event và evidence"
+    },
+    {
+      "id": "C3",
+      "weight": 6,
+      "title": "Operational visibility",
+      "name": "Đo chất lượng và hiệu năng"
+    },
+    {
+      "id": "C4",
+      "weight": 5,
+      "title": "Production hardening gate",
+      "name": "Queue và xử lý lỗi"
+    },
+    {
+      "id": "D1",
+      "weight": 6,
+      "title": "Collect & curate",
+      "name": "Thu thập dữ liệu đại diện"
+    },
+    {
+      "id": "D2",
+      "weight": 5,
+      "title": "Build normal feature sets",
+      "name": "Chia tập và tạo feature dataset"
+    },
+    {
+      "id": "D3",
+      "weight": 9,
+      "title": "Train → export → verify",
+      "name": "Train và đánh giá model"
+    },
+    {
+      "id": "D4",
+      "weight": 5,
+      "title": "Versioned artifact",
+      "name": "Artifact và gói chuyển nền tảng"
+    },
+    {
+      "id": "D5",
+      "weight": 5,
+      "title": "Review → Pi → release",
+      "name": "Staging và phát hành"
+    }
+  ],
+  "statuses": {
+    "verified": "Đã kiểm local",
+    "partial": "Một phần",
+    "ready": "Đã chuẩn bị; chưa chạy đích",
+    "todo": "Chưa làm",
+    "gap": "Có kết quả chưa đạt"
+  },
+  "tasks": [
+    {
+      "id": "T01",
+      "node": "A1",
+      "weight": 2,
+      "name": "Chốt hợp đồng dữ liệu CAN",
+      "why": "Mọi module phải hiểu thống nhất timestamp, ID, DLC và payload.",
+      "outcome": "CSV schema v1: timestamp_us, can_id_hex, dlc, data_hex, label; giới hạn Classic CAN standard 11-bit.",
+      "use": "Làm đầu vào chung cho replay, capture adapter và xử lý dataset.",
+      "accept": "Frame hợp lệ được đọc; timestamp âm/đảo, DLC sai và ID ngoài phạm vi bị từ chối.",
+      "status": "verified",
+      "deps": [],
+      "evidence": "src/main.cpp: parse_frame; tests/test_pipeline.py; docs/ARCHITECTURE.vi.md mục F"
+    },
+    {
+      "id": "T02",
+      "node": "A1",
+      "weight": 2,
+      "name": "Tạo dữ liệu và replay có thể lặp lại",
+      "why": "Có thể kiểm tra toàn pipeline khi chưa nối Pi hoặc CAN thật.",
+      "outcome": "Các phiên train/validation/test/demo tổng hợp độc lập; replay nhanh và realtime.",
+      "use": "Tái hiện lỗi và review logic bằng cùng một đầu vào.",
+      "accept": "Demo phát 460 window; realtime chỉ phát kết quả sau cuối window; label không tham gia inference.",
+      "status": "verified",
+      "deps": [
+        "T01"
+      ],
+      "evidence": "tools/prepare.py: generate; src/main.cpp: read_csv/replay; tests/test_pipeline.py"
+    },
+    {
+      "id": "T03",
+      "node": "A2",
+      "weight": 2,
+      "name": "Chuẩn bị vcan trên Linux/Pi",
+      "why": "Tách lỗi socket/Linux khỏi lỗi dây, transceiver và bitrate.",
+      "outcome": "vcan0 hoạt động cùng checklist setup và teardown trên thiết bị đích.",
+      "use": "Làm môi trường đầu tiên để chạy capture SocketCAN thật.",
+      "accept": "Có log ip link, candump và frame nhận qua executable trên Linux/Pi.",
+      "status": "ready",
+      "deps": [
+        "T07"
+      ],
+      "evidence": "docs/DEPLOY_RASPBERRY_PI.vi.md mục 5; chưa có log chạy trên Pi"
+    },
+    {
+      "id": "T04",
+      "node": "A2",
+      "weight": 3,
+      "name": "Viết virtual ECU và kịch bản vcan có ground truth",
+      "why": "Frame gửi tay không đủ kiểm tra timing, recall hay detection delay.",
+      "outcome": "Traffic normal có chu kỳ, kịch bản bất thường trong lab, timestamp onset và expected behavior.",
+      "use": "Cấp nguồn kiểm thử live có thể đo và tái lập.",
+      "accept": "Kịch bản chạy lặp lại được; ground truth độc lập với output IDS; không gửi ra can0.",
+      "status": "todo",
+      "deps": [
+        "T03",
+        "T01"
+      ],
+      "evidence": "Chưa có test harness phát virtual ECU; generate hiện chỉ xuất CSV"
+    },
+    {
+      "id": "T05",
+      "node": "A3",
+      "weight": 3,
+      "name": "Chọn adapter và chốt sơ đồ điện CAN lab",
+      "why": "Pi không đọc CAN_H/CAN_L trực tiếp; phần cứng và driver phải khớp.",
+      "outcome": "BOM theo thiết bị thực, sơ đồ nối dây, termination, nguồn/reference và driver cần dùng.",
+      "use": "Tránh nhầm lỗi phần cứng thành lỗi AI hoặc SocketCAN.",
+      "accept": "Review đúng model adapter, listen-only, bitrate và topology; chưa chọn mua thay bạn.",
+      "status": "todo",
+      "deps": [],
+      "evidence": "docs/ARCHITECTURE.vi.md mục C có thiết kế; chưa có BOM phần cứng được chốt"
+    },
+    {
+      "id": "T06",
+      "node": "A3",
+      "weight": 3,
+      "name": "Bring-up can0 và xác nhận đường nhận vật lý",
+      "why": "Cần chứng minh frame thực đi từ bus qua adapter vào Pi.",
+      "outcome": "Capture mẫu trên testbench, cấu hình interface và thống kê lỗi/drop.",
+      "use": "Cho phép thay nguồn vcan bằng CAN vật lý sau khi đường nhận đạt.",
+      "accept": "candump khớp nguồn lab; bitrate đúng; controller listen-only nếu yêu cầu thụ động; ghi nhận lỗi bus.",
+      "status": "todo",
+      "deps": [
+        "T05",
+        "T07",
+        "T09"
+      ],
+      "evidence": "docs/DEPLOY_RASPBERRY_PI.vi.md mục 6 là hướng dẫn, chưa có capture phần cứng"
+    },
+    {
+      "id": "T07",
+      "node": "A4",
+      "weight": 3,
+      "name": "Kiểm tra OS và build native trên Pi",
+      "why": "Executable Windows không chạy được trên Pi ARM64.",
+      "outcome": "Ghi cấu hình OS/CPU/RAM; binary C++17 build native trên Pi.",
+      "use": "Tạo runtime đúng thiết bị để chạy replay và capture.",
+      "accept": "Xác nhận aarch64/64-bit, build/link thành công và executable chạy được trên chính Pi.",
+      "status": "ready",
+      "deps": [],
+      "evidence": "CMakeLists.txt; docs/DEPLOY_RASPBERRY_PI.vi.md mục 2–4; mới có object cross-compile ARM64"
+    },
+    {
+      "id": "T08",
+      "node": "B1",
+      "weight": 2,
+      "name": "Parser và source adapter CSV",
+      "why": "Frame phải được chuẩn hóa trước khi vào feature pipeline.",
+      "outcome": "C++ Frame và CSV source adapter có lỗi input rõ ràng.",
+      "use": "Làm baseline kiểm tra xử lý dữ liệu độc lập phần cứng.",
+      "accept": "Golden input, DLC 0, input sai và thứ tự timestamp đều được kiểm thử.",
+      "status": "verified",
+      "deps": [
+        "T01"
+      ],
+      "evidence": "src/main.cpp: Frame/parse_frame/read_csv; tests/test_pipeline.py"
+    },
+    {
+      "id": "T09",
+      "node": "B1",
+      "weight": 4,
+      "name": "Receiver SocketCAN và quan sát frame bị bỏ",
+      "why": "Đưa frame Linux live vào cùng pipeline đang chạy replay.",
+      "outcome": "socket/bind/poll/recvmsg; lọc frame v1; counter rx_drops và ignored_frames.",
+      "use": "Nối kernel CAN với feature/inference trên edge.",
+      "accept": "Chạy integration test trên vcan rồi can0; ngắt interface phải báo lỗi; drop/ignored counter kiểm chứng được.",
+      "status": "ready",
+      "deps": [
+        "T03",
+        "T08"
+      ],
+      "evidence": "src/main.cpp: capture; đã compile nhánh Linux thành object, chưa runtime-test"
+    },
+    {
+      "id": "T10",
+      "node": "B2",
+      "weight": 2,
+      "name": "Chốt clock và timestamp live",
+      "why": "Timing sai làm feature sai và báo detection delay không đáng tin.",
+      "outcome": "Clock contract; phương án kernel/hardware timestamp, monotonic mapping và xử lý clock discontinuity.",
+      "use": "Tính IAT, ordering và delay có cùng miền clock.",
+      "accept": "Không trừ timestamp khác clock domain; đo được sai số receipt timestamp dưới tải.",
+      "status": "partial",
+      "deps": [
+        "T09"
+      ],
+      "evidence": "Live hiện dùng steady_clock tại user space; chưa có kernel/hardware timestamp"
+    },
+    {
+      "id": "T11",
+      "node": "B2",
+      "weight": 2,
+      "name": "Window engine 100 ms",
+      "why": "AI cần vector theo một khoảng thời gian xác định thay vì frame rời.",
+      "outcome": "Tumbling window 100 ms, quy tắc biên, window rỗng và EOF rõ ràng.",
+      "use": "Làm đơn vị tính feature, inference và quyết định.",
+      "accept": "Frame đúng biên vào window mới; gap sinh window rỗng; final partial window bị bỏ như contract.",
+      "status": "verified",
+      "deps": [
+        "T08"
+      ],
+      "evidence": "src/main.cpp: Extractor::advance/finish; tests/test_pipeline.py"
+    },
+    {
+      "id": "T12",
+      "node": "B3",
+      "weight": 3,
+      "name": "Feature toàn cục v1 dùng chung train/runtime",
+      "why": "Ngăn lệch công thức giữa notebook train và executable triển khai.",
+      "outcome": "8 feature float32: rate, ID diversity/entropy/share, byte stats, bit flip và same-ID IAT.",
+      "use": "Cấp input có cùng schema cho Python training và C++ inference.",
+      "accept": "Golden vector tính tay đạt; thứ tự/đơn vị/reset/giá trị thiếu được ghi rõ.",
+      "status": "verified",
+      "deps": [
+        "T11"
+      ],
+      "evidence": "src/main.cpp: Extractor; docs/ARCHITECTURE.vi.md mục G; tools/prepare.py: FEATURES"
+    },
+    {
+      "id": "T13",
+      "node": "B3",
+      "weight": 4,
+      "name": "Feature theo từng ID/signal và ngữ cảnh",
+      "why": "Feature tổng hợp có thể làm loãng thay đổi của một ID; model hiện bắt yếu payload shift.",
+      "outcome": "Candidate schema v2: period error, counter continuity, per-ID payload; DBC/signal checks khi có dữ liệu.",
+      "use": "Cải thiện phát hiện thay đổi tinh vi và giải thích được dấu hiệu.",
+      "accept": "Feature train/runtime vẫn khớp; đánh giá trên validation riêng; không giải mã RPM/speed khi thiếu DBC đúng.",
+      "status": "todo",
+      "deps": [
+        "T28",
+        "T29",
+        "T12"
+      ],
+      "evidence": "Hạn chế được đo trong docs/VALIDATION.vi.md: payload shift 1/40 window vượt ngưỡng"
+    },
+    {
+      "id": "T14",
+      "node": "B4",
+      "weight": 3,
+      "name": "Export cây và inference C++",
+      "why": "Inference trên edge cần độc lập với môi trường Python training.",
+      "outcome": "Forest loader, kiểm schema/topology, tính path length và anomaly score.",
+      "use": "Chạy model trực tiếp trong executable C++ trên PC/Pi.",
+      "accept": "Max abs error so với sklearn ≤1e-7; model không hợp lệ phải fail rõ ràng.",
+      "status": "verified",
+      "deps": [
+        "T12",
+        "T32"
+      ],
+      "evidence": "src/main.cpp: Forest; tools/prepare.py; 1660 window parity, max error 1.11e-16"
+    },
+    {
+      "id": "T15",
+      "node": "B4",
+      "weight": 2,
+      "name": "Xác nhận score parity trên Pi",
+      "why": "Compile được chưa chứng minh hành vi số học đúng trên thiết bị đích.",
+      "outcome": "Báo cáo checksum và 32 golden score trên native binary Pi.",
+      "use": "Cho phép chuyển từ local inference sang kiểm thử edge thực.",
+      "accept": "tools/verify_pi_bundle.py PASS trên Pi, score error ≤1e-7 và metadata đúng thiết bị.",
+      "status": "ready",
+      "deps": [
+        "T07",
+        "T14",
+        "T36"
+      ],
+      "evidence": "tools/verify_pi_bundle.py; đã PASS Windows, chưa chạy Pi"
+    },
+    {
+      "id": "T16",
+      "node": "B5",
+      "weight": 1,
+      "name": "Rule baseline cho demo",
+      "why": "Một số dấu hiệu rõ ràng nên phát hiện và giải thích trực tiếp.",
+      "outcome": "Rule unknown_id và possible_flooding với profile tổng hợp.",
+      "use": "Đối chứng rule-only và bảo đảm AI không phải nguồn quyết định duy nhất.",
+      "accept": "Flooding/ID lạ có reason tương ứng; không gọi kết quả rule là kết quả model.",
+      "status": "verified",
+      "deps": [
+        "T11"
+      ],
+      "evidence": "src/main.cpp: Detector::emit; docs/VALIDATION.vi.md bảng kịch bản"
+    },
+    {
+      "id": "T17",
+      "node": "B5",
+      "weight": 2,
+      "name": "Profile và rule đúng mạng lab",
+      "why": "Whitelist/rate threshold toy không đại diện mọi xe hoặc mọi bus.",
+      "outcome": "Profile versioned cho ID, chu kỳ/rate và rule signal khi có DBC/ngữ cảnh.",
+      "use": "Giảm false alert và làm cảnh báo có ý nghĩa với testbench thực.",
+      "accept": "Profile xuất phát từ normal lab đã review; rule được test bằng positive/negative cases.",
+      "status": "partial",
+      "deps": [
+        "T28",
+        "T29",
+        "T06",
+        "T16"
+      ],
+      "evidence": "Đang hardcode ngưỡng demo >1800 frames/s; whitelist demo ở model header"
+    },
+    {
+      "id": "T18",
+      "node": "B6",
+      "weight": 3,
+      "name": "Fusion rule/AI và debounce cảnh báo",
+      "why": "Một spike score không nên tự tạo chuỗi cảnh báo liên tục.",
+      "outcome": "State machine HEALTHY/SUSPECT/ALERT, ML cần 2 window; clear sau 5 normal; hard rule tức thời tại cuối window.",
+      "use": "Biến score/rule thành trạng thái cảnh báo ổn định và kiểm chứng được.",
+      "accept": "Có state transition tests; reason window hiện tại phân biệt với alarm còn latch.",
+      "status": "verified",
+      "deps": [
+        "T14",
+        "T16"
+      ],
+      "evidence": "src/main.cpp: Detector::emit; tests/test_pipeline.py; docs/ARCHITECTURE.vi.md mục J"
+    },
+    {
+      "id": "T19",
+      "node": "B6",
+      "weight": 2,
+      "name": "Tách health khỏi alarm và theo dõi mất dữ liệu",
+      "why": "NO_DATA không phải attack và không nên làm mất alarm đang mở.",
+      "outcome": "sensor_health độc lập alarm_state; dữ liệu thiếu/drop được gắn degraded.",
+      "use": "Tránh hiển thị healthy hoặc mất lịch sử khi sensor ngừng nhận.",
+      "accept": "Silence/disconnect/drop không xóa alarm; health và alarm có test độc lập.",
+      "status": "partial",
+      "deps": [
+        "T09",
+        "T18"
+      ],
+      "evidence": "Có NO_DATA và counter; hiện vẫn dùng một state chung, chưa tách hai state"
+    },
+    {
+      "id": "T20",
+      "node": "C1",
+      "weight": 2,
+      "name": "Dashboard review replay",
+      "why": "Cần nhìn thấy traffic, score, state và giới hạn khi review local.",
+      "outcome": "UI replay 46 s, biểu đồ, model-only P95, kiến trúc và kết quả kiểm chứng.",
+      "use": "Review logic đầu cuối trước khi nối phần cứng.",
+      "accept": "460 event, không lỗi JS; layout desktop/mobile đạt; ghi rõ dữ liệu mô phỏng.",
+      "status": "verified",
+      "deps": [
+        "T02",
+        "T18"
+      ],
+      "evidence": "ui/index.html; tools/serve.py; tests/browser_smoke.py; docs/local-demo.png"
+    },
+    {
+      "id": "T21",
+      "node": "C1",
+      "weight": 3,
+      "name": "Dashboard nguồn CAN live",
+      "why": "UI hiện không tự thấy output từ capture can0.",
+      "outcome": "Source selector/capture lifecycle, NDJSON live vào API, UI phân biệt replay/live và nguồn metrics.",
+      "use": "Quan sát vận hành Pi khi đang nhận CAN thật.",
+      "accept": "UI khớp event capture; disconnect/stop xử lý được; không gán metadata replay hoặc số đo PC cho Pi.",
+      "status": "todo",
+      "deps": [
+        "T09",
+        "T19",
+        "T22",
+        "T20"
+      ],
+      "evidence": "tools/serve.py hiện chỉ gọi replay subprocess"
+    },
+    {
+      "id": "T22",
+      "node": "C2",
+      "weight": 2,
+      "name": "Chuẩn hóa event/alert contract",
+      "why": "Một window ALERT khác với một sự kiện tấn công duy nhất.",
+      "outcome": "Event có window/model/profile/clock/data quality; alert opened/updated/closed và ID liên kết.",
+      "use": "Cho UI, logger và evaluator đếm/correlate cùng một sự kiện.",
+      "accept": "Window và attack event không bị đếm lẫn; truy được model/profile gây quyết định.",
+      "status": "partial",
+      "deps": [
+        "T18",
+        "T19"
+      ],
+      "evidence": "Có NDJSON per-window và window_end_ms; chưa có alert lifecycle/model version trong từng event"
+    },
+    {
+      "id": "T23",
+      "node": "C2",
+      "weight": 4,
+      "name": "Evidence và retention",
+      "why": "Score đơn lẻ không đủ điều tra; log không giới hạn có thể đầy ổ đĩa.",
+      "outcome": "Raw pre/post-event buffer, event index và rotation theo dung lượng/thời gian.",
+      "use": "Từ một alert xem lại được frame liên quan, trong ngân sách lưu trữ đã chốt.",
+      "accept": "Evidence khớp event ID và thời gian; không tăng RAM/disk vô hạn; có hành vi khi disk full.",
+      "status": "todo",
+      "deps": [
+        "T22",
+        "T26"
+      ],
+      "evidence": "Hiện chỉ NDJSON của lượt replay gần nhất; chưa raw ring buffer/rotation"
+    },
+    {
+      "id": "T24",
+      "node": "C3",
+      "weight": 3,
+      "name": "Báo cáo chất lượng nhận diện",
+      "why": "Test pipeline PASS không đồng nghĩa model phát hiện tốt.",
+      "outcome": "Precision/recall/F1 theo window và event, false alerts/giờ, detection delay và các case miss.",
+      "use": "Căn cứ quyết định model/profile có đủ dùng cho lab hay không.",
+      "accept": "Tách AI-only/rule-only/fused; công bố thời lượng normal và số attack; đánh giá holdout độc lập.",
+      "status": "partial",
+      "deps": [
+        "T34",
+        "T22"
+      ],
+      "evidence": "docs/VALIDATION.vi.md có synthetic window results; chưa quality report dữ liệu thực"
+    },
+    {
+      "id": "T25",
+      "node": "C3",
+      "weight": 3,
+      "name": "Benchmark tài nguyên và thời gian trên Pi",
+      "why": "PC P95 không cho biết throughput hay nhiệt/throttling của Pi.",
+      "outcome": "Pi report: model/full-pipeline latency, detection delay, frame/drop rate, CPU/RSS/nhiệt/disk.",
+      "use": "Chốt tải đáp ứng được và ngân sách tài nguyên edge.",
+      "accept": "Ghi đúng cấu hình Pi/OS/adapter; tách replay/vcan/CAN; đối chiếu mục tiêu đã được chốt.",
+      "status": "todo",
+      "deps": [
+        "T15",
+        "T04",
+        "T06"
+      ],
+      "evidence": "Hiện chỉ số đo model-only trên PC; chưa benchmark Pi"
+    },
+    {
+      "id": "T26",
+      "node": "C4",
+      "weight": 3,
+      "name": "Bounded queues và logger bất đồng bộ",
+      "why": "Ghi stdout/disk chậm hiện có thể chặn đường nhận frame.",
+      "outcome": "Capture queue và event queue có giới hạn, policy overflow và counter riêng.",
+      "use": "Giữ đường nhận ổn định khi model/UI/logger có độ trễ.",
+      "accept": "Stress test logger chậm; memory bounded; mọi frame/event drop quan sát được.",
+      "status": "todo",
+      "deps": [
+        "T09",
+        "T22"
+      ],
+      "evidence": "Runtime hiện là một luồng đồng bộ; chưa có SPSC queue/logger worker"
+    },
+    {
+      "id": "T27",
+      "node": "C4",
+      "weight": 2,
+      "name": "Fault injection và phục hồi",
+      "why": "Hệ thống cần báo sai/lỗi rõ ràng ngoài happy path.",
+      "outcome": "Test matrix: input/model hỏng, interface down, queue overflow, disk full, process restart.",
+      "use": "Xác nhận lỗi không bị diễn giải thành normal và có quy trình recovery.",
+      "accept": "Mỗi fault có expected state, log, exit/restart behavior và bằng chứng chạy trên đích.",
+      "status": "partial",
+      "deps": [
+        "T19",
+        "T23",
+        "T26"
+      ],
+      "evidence": "Đã test parser/model lỗi local; chưa interface/disk/queue/restart trên Pi"
+    },
+    {
+      "id": "T28",
+      "node": "D1",
+      "weight": 3,
+      "name": "Chốt và lấy nguồn dữ liệu đại diện",
+      "why": "Model toy không học hành vi thật của mạng CAN đích.",
+      "outcome": "Data registry cho HCRL/ROAD hoặc normal/attack lab captures; nguồn, điều kiện sử dụng và version.",
+      "use": "Cung cấp đầu vào có provenance để train và đánh giá.",
+      "accept": "File dữ liệu thực có sẵn và được nhận diện đúng; phạm vi xe/bus/label được mô tả.",
+      "status": "todo",
+      "deps": [],
+      "evidence": "docs/ARCHITECTURE.vi.md có nguồn tham khảo; chưa tải/đưa dữ liệu thực vào pipeline"
+    },
+    {
+      "id": "T29",
+      "node": "D1",
+      "weight": 3,
+      "name": "Adapter dataset và kiểm tra chất lượng dữ liệu",
+      "why": "Mỗi bộ dữ liệu có format, clock và nhãn khác nhau.",
+      "outcome": "Converter về schema chung, kiểm monotonic/DLC/missing/duplicate và metadata onset/event.",
+      "use": "Bảo đảm model học dữ liệu hợp lệ và evaluator có ground truth.",
+      "accept": "Spot-check với raw source; label không đi vào feature; có báo cáo dữ liệu bị loại.",
+      "status": "todo",
+      "deps": [
+        "T28",
+        "T01"
+      ],
+      "evidence": "Chưa có HCRL/ROAD converter hoặc capture-normalizer lab"
+    },
+    {
+      "id": "T30",
+      "node": "D2",
+      "weight": 3,
+      "name": "Split theo phiên và chống data leakage",
+      "why": "Random split frame gần nhau dễ làm kết quả đánh giá đẹp giả.",
+      "outcome": "Manifest train/validation/test theo capture/session/thời gian; purge nếu dùng overlapping window.",
+      "use": "Giữ test thực sự chưa được dùng để fit/tune.",
+      "accept": "Không trùng capture/event hoặc overlapping context giữa tập; threshold không chỉnh theo final test.",
+      "status": "partial",
+      "deps": [
+        "T29"
+      ],
+      "evidence": "Demo dùng seed/phiên riêng; chưa split/audit leakage trên dữ liệu thực"
+    },
+    {
+      "id": "T31",
+      "node": "D2",
+      "weight": 2,
+      "name": "Tạo feature dataset có version",
+      "why": "Cần truy được model được train từ feature/schema và dữ liệu nào.",
+      "outcome": "Feature CSV/metadata theo split, schema version và data fingerprint.",
+      "use": "Tái lập training và phát hiện schema mismatch khi deploy.",
+      "accept": "Dùng đúng extractor runtime; có row/window counts, units/order và provenance kiểm tra được.",
+      "status": "partial",
+      "deps": [
+        "T30",
+        "T12"
+      ],
+      "evidence": "Cùng C++ extractor đã dùng; chưa hoàn chỉnh fingerprint/lineage cho dataset thực"
+    },
+    {
+      "id": "T32",
+      "node": "D3",
+      "weight": 2,
+      "name": "Train baseline Isolation Forest normal-only",
+      "why": "Có một model nhẹ và quy trình train làm baseline so sánh.",
+      "outcome": "Model fitted trên normal train, tham số cố định và seed/version được ghi.",
+      "use": "Đưa anomaly detection vào pipeline C++ thay vì chỉ rule.",
+      "accept": "Không dùng attack label làm feature; fit chỉ train split; tái lập được artifact demo.",
+      "status": "verified",
+      "deps": [
+        "T12",
+        "T02"
+      ],
+      "evidence": "tools/prepare.py; demo 64 trees/max_samples 128; mới trên dữ liệu tổng hợp"
+    },
+    {
+      "id": "T33",
+      "node": "D3",
+      "weight": 3,
+      "name": "Calibration và chọn candidate trên validation",
+      "why": "Ngưỡng/model phải được chọn theo dữ liệu và false-alarm budget, không theo cảm giác.",
+      "outcome": "So sánh baseline/candidate, threshold và rule profile trên validation riêng.",
+      "use": "Chọn operating point trước khi mở final test.",
+      "accept": "Có normal/attack validation, lý do chọn threshold và trade-off; freeze trước final test.",
+      "status": "partial",
+      "deps": [
+        "T31",
+        "T32",
+        "T13",
+        "T17"
+      ],
+      "evidence": "Demo dùng percentile 99.5 normal validation; chưa chọn candidate bằng dữ liệu lab"
+    },
+    {
+      "id": "T34",
+      "node": "D3",
+      "weight": 4,
+      "name": "Đánh giá holdout và xử lý các case miss",
+      "why": "Phải chứng minh model đạt mục tiêu phát hiện, không chỉ export đúng.",
+      "outcome": "Holdout report + failure analysis; candidate pass/fail rõ cho từng kịch bản.",
+      "use": "Chặn việc đẩy model còn yếu lên môi trường sử dụng thực.",
+      "accept": "Đạt tiêu chí recall/false alarm/delay đã chốt trên holdout; không che case miss hoặc hạ ngưỡng theo test.",
+      "status": "gap",
+      "deps": [
+        "T33",
+        "T04"
+      ],
+      "evidence": "Payload shift chỉ 1/40 window vượt ML threshold, không confirmed ALERT; dữ liệu thực chưa đánh giá"
+    },
+    {
+      "id": "T35",
+      "node": "D4",
+      "weight": 2,
+      "name": "Model bundle và metadata phiên bản",
+      "why": "Model phải đi cùng schema/profile/threshold tương thích.",
+      "outcome": "Forest + manifest + checksum + golden vectors; bổ sung model/data/profile/build version.",
+      "use": "Nhận diện chính xác bộ model/runtime được review hoặc rollback.",
+      "accept": "Runtime/artifact mismatch bị phát hiện; metadata đủ tái lập; hash không bị gọi nhầm là chữ ký.",
+      "status": "partial",
+      "deps": [
+        "T14",
+        "T32"
+      ],
+      "evidence": "models/manifest.json, .forest, pi-golden-*; chưa đầy đủ version/provenance và runtime hash enforcement"
+    },
+    {
+      "id": "T36",
+      "node": "D4",
+      "weight": 3,
+      "name": "Đóng gói chuyển sang Pi và kiểm integrity",
+      "why": "Chuyển đúng source/model, không mang virtualenv hoặc executable Windows sang Pi.",
+      "outcome": "ai-vids-pi-review.tar.gz có inventory và checksum từng file; checker standard-library Python.",
+      "use": "Giảm lỗi copy thủ công và tạo một gói review có thể xác minh.",
+      "accept": "Archive chứa đúng file; hash khớp; local golden checker đạt; không tự SSH hay cài đặt.",
+      "status": "verified",
+      "deps": [
+        "T14",
+        "T20"
+      ],
+      "evidence": "tools/package_pi.py; tools/verify_pi_bundle.py; build/ai-vids-pi-review.tar.gz đã kiểm local"
+    },
+    {
+      "id": "T37",
+      "node": "D5",
+      "weight": 2,
+      "name": "Chạy Pi staging và lưu biên bản review",
+      "why": "Đưa code lên Pi là một lần kiểm chứng thiết bị đích, chưa phải production.",
+      "outcome": "Checklist replay → vcan → lab CAN; log kết quả và quyết định review.",
+      "use": "Xác định phần nào thực sự đạt trên Pi trước khi vận hành dài hạn.",
+      "accept": "Có kết quả trực tiếp từ Pi, giới hạn và quyết định tiếp tục rõ; việc chạy Pi nằm trong phạm vi được bạn chốt.",
+      "status": "ready",
+      "deps": [
+        "T15",
+        "T04",
+        "T06",
+        "T21",
+        "T24",
+        "T25"
+      ],
+      "evidence": "docs/DEPLOY_RASPBERRY_PI.vi.md; chưa thực hiện staging trên Pi"
+    },
+    {
+      "id": "T38",
+      "node": "D5",
+      "weight": 3,
+      "name": "Service, rollback và cổng chấp thuận production",
+      "why": "Cần khởi động/phục hồi có kiểm soát và quay lại bản đã biết tốt.",
+      "outcome": "Service account/systemd, interface startup, restart limits, version activation/rollback và runbook.",
+      "use": "Vận hành dài hạn với bản đã kiểm chứng và có đường phục hồi.",
+      "accept": "Staging/soak đạt; rollback được test; bạn chấp thuận production trước khi triển khai.",
+      "status": "todo",
+      "deps": [
+        "T37",
+        "T23",
+        "T26",
+        "T27",
+        "T35"
+      ],
+      "evidence": "Chưa có service/installer/rollback tự động; chưa có chấp thuận production"
+    }
+  ]
+}
