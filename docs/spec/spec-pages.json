@@ -1,0 +1,132 @@
+[
+  {
+    "page": 1,
+    "title": "AI-VIDS",
+    "part": "ĐẶC TẢ LUỒNG CHẠY & TRIỂN KHAI"
+  },
+  {
+    "page": 2,
+    "title": "Cách đọc và so sánh hai cấu hình",
+    "part": "ĐỊNH HƯỚNG"
+  },
+  {
+    "page": 3,
+    "title": "Kiến trúc chung và ranh giới",
+    "part": "CHUNG · A/B/C/D"
+  },
+  {
+    "page": 4,
+    "title": "Thành phần và bốn mode hiện có",
+    "part": "V1 · CẤU TRÚC CODE"
+  },
+  {
+    "page": 5,
+    "title": "VM: từ source tới binary và parity",
+    "part": "V1 · T36 / T07 / T14 / T15"
+  },
+  {
+    "page": 6,
+    "title": "VM: 12 tests thực sự kiểm gì?",
+    "part": "V1 · KIỂM CHỨC NĂNG"
+  },
+  {
+    "page": 7,
+    "title": "VM replay: thứ tự gọi hàm",
+    "part": "V1 · A1 → B1 → B2 → B3 → B4/B5 → B6"
+  },
+  {
+    "page": 8,
+    "title": "Đi xuyên một window trong log của bạn",
+    "part": "V1 · VÍ DỤ 40,8 → 40,9 GIÂY"
+  },
+  {
+    "page": 9,
+    "title": "Event JSON, timestamp và ý nghĩa phép đo",
+    "part": "CHUNG · CONTRACT V1"
+  },
+  {
+    "page": 10,
+    "title": "VM vcan: luồng Linux socket thật",
+    "part": "V1 · T03 / T09 · A2 → B1"
+  },
+  {
+    "page": 11,
+    "title": "VM dashboard và điều kiện kết thúc mốc",
+    "part": "V1 · T20 / C1"
+  },
+  {
+    "page": 12,
+    "title": "Training và artifact dùng chung hai cấu hình",
+    "part": "CHUNG · D1 → D2 → D3 → D4 → B4"
+  },
+  {
+    "page": 13,
+    "title": "Pi production: kiến trúc mục tiêu",
+    "part": "V2 · A3/A4 + B/C · CẦN TRIỂN KHAI"
+  },
+  {
+    "page": 14,
+    "title": "Pi: luồng khởi động từ cấp nguồn tới READY",
+    "part": "V2 · BOOT / READINESS"
+  },
+  {
+    "page": 15,
+    "title": "Pi: đường dữ liệu và giới hạn backlog",
+    "part": "V2 · THỜI GIAN CHẠY"
+  },
+  {
+    "page": 16,
+    "title": "Pi: alarm và health là hai trục độc lập",
+    "part": "V2 · T18 / T19 / T27"
+  },
+  {
+    "page": 17,
+    "title": "Pi: event, evidence, API và retention",
+    "part": "V2 · C1/C2/C3"
+  },
+  {
+    "page": 18,
+    "title": "Pi: bundle, filesystem và CLI mục tiêu",
+    "part": "V2 · D4 / T35 / T36"
+  },
+  {
+    "page": 19,
+    "title": "Pi: service và tiến trình khởi động",
+    "part": "V2 · TEMPLATE CHƯA THỂ DÙNG VỚI BINARY V1"
+  },
+  {
+    "page": 20,
+    "title": "Pi: deploy, promote và rollback",
+    "part": "V2 · D5 / T37 / T38"
+  },
+  {
+    "page": 21,
+    "title": "Gate nghiệm thu và điểm chặn release",
+    "part": "CHUNG / V2 · ACCEPTANCE"
+  },
+  {
+    "page": 22,
+    "title": "Map task → code → outcome (01–13)",
+    "part": "TRA CỨU · WBS / ARCH"
+  },
+  {
+    "page": 23,
+    "title": "Map task → code → outcome (14–26)",
+    "part": "TRA CỨU · WBS / ARCH"
+  },
+  {
+    "page": 24,
+    "title": "Map task → code → outcome (27–38)",
+    "part": "TRA CỨU · WBS / ARCH"
+  },
+  {
+    "page": 25,
+    "title": "Tra nhanh: lệnh nào đi qua phần nào?",
+    "part": "CHUNG · EXECUTION PLAYBOOK"
+  },
+  {
+    "page": 26,
+    "title": "Nguồn tham chiếu và checklist review",
+    "part": "KẾT THÚC SPEC · v1.0"
+  }
+]

@@ -5,3 +5,4 @@ runtime/
 data/*.csv
 models/*.forest
 *.pyc
+docs/spec/preview/

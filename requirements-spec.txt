@@ -1,0 +1,5 @@
+# Optional authoring/QA dependencies for the PDF. Not needed by edge inference.
+websocket-client==1.9.2
+pypdf==6.21.4
+pypdfium2==5.14.0
+pillow==13.0.0

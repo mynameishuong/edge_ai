@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "pages": 26,
+  "bookmarks": 26,
+  "toc_links": 24,
+  "text_characters": 42565,
+  "unicode_checks": "PASS",
+  "a4_size": "PASS",
+  "headings_and_footers": "PASS",
+  "html_layout_overflow": false,
+  "rasterized_pages": 26,
+  "preview_contact_pages": [
+    1,
+    2,
+    7,
+    8,
+    13,
+    15,
+    19,
+    22,
+    26
+  ],
+  "pdf_bytes": 327159
+}

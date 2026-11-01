@@ -4,6 +4,7 @@ Hệ thống phát hiện bất thường trên CAN bằng Edge AI, thiết kế
 
 ## Xem ngay
 
+- [Spec PDF: Ubuntu VMware + Raspberry Pi production target](docs/spec/AI-VIDS_Spec_VMware_Ubuntu_RaspberryPi_Production_v1.0.pdf) — 26 trang, luồng chạy, map task/code, boot/deploy/rollback và gate nghiệm thu.
 - Dashboard local: **http://127.0.0.1:8765** khi local server đang chạy.
 - [Sơ đồ tổng thể SVG](docs/architecture.svg) — mở bằng trình duyệt, zoom được, không phụ thuộc mạng.
 - [Kiến trúc A–Z](docs/ARCHITECTURE.vi.md) — hardware, phần mềm, dữ liệu, AI, vận hành, kiểm thử và roadmap.
@@ -12,6 +13,8 @@ Hệ thống phát hiện bất thường trên CAN bằng Edge AI, thiết kế
 - [Hướng dẫn chạy local](docs/LOCAL_REVIEW.vi.md).
 - [Hướng dẫn chuyển sang Raspberry Pi](docs/DEPLOY_RASPBERRY_PI.vi.md) — replay → vcan → CAN testbench, chưa thực thi trên Pi.
 - [Bắt đầu trên Ubuntu VMware](docs/UBUNTU_VM_FIRST_RUN.vi.md) — build/replay → vcan, mapping task và log cần review; chưa kiểm chứng ARM64/Pi.
+- [Giải thích Ubuntu task → lệnh → hàm → output 1:1](docs/VM_EXECUTION_MAP.vi.md) — đi xuyên code bằng chính window log bạn gửi; có index đủ T01–T38.
+- [Chú giải binary và từng dòng model](docs/inspect/AI_VIDS_BINARY_MODEL_LINE_BY_LINE.vi.html) — C++ loader/scorer, 7.514 dòng model, nhảy theo node và trace score qua 64 cây; mở offline.
 - [Kết quả kiểm chứng](docs/VALIDATION.vi.md).
 
 ![Kiến trúc AI-VIDS](docs/architecture.svg)

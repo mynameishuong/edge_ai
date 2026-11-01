@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "model_lines": 7514,
+  "nodes": 7448,
+  "trees": 64,
+  "source_explained_lines": 66,
+  "native_score": 0.4615071300611855,
+  "checks": [
+    "offline HTML",
+    "source navigation",
+    "node child navigation",
+    "all-model pagination",
+    "tree trace",
+    "native C++ score parity",
+    "mobile layout"
+  ],
+  "javascript_errors": []
+}
